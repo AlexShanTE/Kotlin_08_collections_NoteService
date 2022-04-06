@@ -9,7 +9,7 @@ class NoteService {
     fun add(note: Note): Note {
         notes += note.copy(id = noteId)
         noteId++
-        return note
+        return notes.last()
     }
 
     fun delete(note: Note): Boolean {
