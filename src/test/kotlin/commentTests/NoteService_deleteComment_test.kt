@@ -1,5 +1,6 @@
 package commentTests
 import Comment
+import CommentService
 import Note
 import NoteService
 import org.junit.Test
@@ -9,25 +10,33 @@ import customExceptions.*
 class NoteService_deleteComment_test {
     @Test
     fun deleteComment_assertTrue() {
-        val service = NoteService()
-        service.add(Note(title = "title", text = "text"))
+
+        val notes = mutableListOf<Note>()
+        val noteService = NoteService(notes)
+        val commentService = CommentService(notes)
+
+        noteService.create(Note(title = "title", text = "text"))
+
         val comment = Comment(noteId = 1, message = "comment")
-        service.addComment(comment)
+        commentService.create(comment)
 
         val expectedValue = true
-        val actualValue = service.deleteComment(comment.copy(commentId = 1))
+        val actualValue = commentService.delete(comment.copy(commentId = 1))
 
         assertEquals(expectedValue, actualValue)
     }
     @Test
     fun deleteComment_assertFalse() {
-        val service = NoteService()
-        service.add(Note(title = "title", text = "text"))
+        val notes = mutableListOf<Note>()
+        val noteService = NoteService(notes)
+        val commentService = CommentService(notes)
+
+        noteService.create(Note(title = "title", text = "text"))
         val comment = Comment(noteId = 1, message = "comment")
-        service.addComment(comment)
+        commentService.create(comment)
 
         val expectedValue = false
-        val actualValue = service.deleteComment(comment.copy(commentId = 0))
+        val actualValue = commentService.delete(comment.copy(commentId = 0))
 
         assertEquals(expectedValue, actualValue)
     }
