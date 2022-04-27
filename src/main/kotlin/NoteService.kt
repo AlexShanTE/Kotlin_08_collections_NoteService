@@ -1,103 +1,47 @@
 import customExceptions.CommentNotExistException
 import customExceptions.NoteNotExistException
 
-class NoteService {
-    var notes = mutableListOf<Note>()
-    var noteId: Int = 1
-    var commentId: Int = 1
+class NoteService(
+    val notes: MutableList<Note>
+) : CrudService<Note> {
 
-    fun add(note: Note): Note {
-        notes += note.copy(id = noteId)
+    private var noteId: Int = 1
+
+    override fun create(e: Note): Note {
+        notes += e.copy(id = noteId)
         noteId++
         return notes.last()
     }
 
-    fun delete(note: Note): Boolean {
-        return if (notes.contains(note)) {
-            notes.remove(note)
+    override fun delete(e: Note): Boolean {
+        return if (notes.contains(e)) {
+            notes.remove(e)
             true
         } else false
     }
 
-    fun edit(note: Note) : Note {
-        for ((index, e) in notes.withIndex()) {
-            if (e.id == note.id) {
-                notes[index] = note
-                return note
+    override fun edit(e: Note): Note {
+        for ((index, el) in notes.withIndex()) {
+            if (el.id == e.id) {
+                notes[index] = e
+                return e
             }
         }
          throw NoteNotExistException("Note is not exist")
     }
 
-    fun get(): MutableList<Note> {
-        return notes
-    }
-
-    fun getById(noteId: Int): Note {
+    override fun getById(id: Int): Note {
         for (note in notes) {
-            if (note.id == noteId) {
+            if (note.id == id) {
                 return note
             }
         }
         throw NoteNotExistException("Note is not exist")
     }
 
-    fun addComment(comment: Comment): Comment {
-        for (note in notes) {
-            if (note.id == comment.noteId) {
-                val newComment = comment.copy(commentId = commentId)
-                note.comments += newComment
-                commentId++
-                return newComment
-            }
-        }
-        throw NoteNotExistException("Note is not exist")
+    @JvmName("getNotes1")
+    fun getNotes(): MutableList<Note> {
+        return notes
     }
-
-    fun deleteComment(comment: Comment): Boolean {
-        for (note in notes) {
-            for ((index, e) in note.comments.withIndex()) {
-                if (e.commentId == comment.commentId) {
-                    note.comments[index].isDeleted = true
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    fun editComment(comment: Comment) : Comment {
-        for (note in notes) {
-            for ((index, e) in note.comments.withIndex()) {
-                if (e.commentId == comment.commentId) {
-                    note.comments[index] = comment
-                    return comment
-                }
-            }
-        }
-        throw CommentNotExistException("Comment not exist")
-    }
-
-    fun restoreComment(comment: Comment):Comment {
-        for (note in notes) {
-            for ((index, e) in note.comments.withIndex()) {
-                if (e == comment.copy(isDeleted = true)) {
-                    note.comments[index].isDeleted = false
-                    return e
-                }
-            }
-        }
-        throw CommentNotExistException("Comment not exist")
-    }
-
-    fun getComments(note: Note): List<Comment> {
-        for (e in notes) {
-            if (e.id == note.id) {
-                return e.comments
-            }
-        }
-        throw CommentNotExistException("This note has no comments")
-    }
-
 
 }
